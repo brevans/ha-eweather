@@ -14,7 +14,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from custom_components.hacs_eweather.api import EWeatherHomeAssistantApiClient
-from homeassistant.helpers.aiohttp_client import async_create_clientsession
+from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
@@ -22,7 +22,11 @@ if TYPE_CHECKING:
 
 async def validate_credentials(hass: HomeAssistant, username: str, password: str) -> None:
     """
-    Validate user credentials by testing API connection.
+    Validate user credentials by signing in to the eweather backend.
+
+    Uses HA's shared aiohttp session (the client keeps no per-session state), and
+    only performs the sign-in — the coordinator's first refresh exercises the full
+    feed fetch right after the entry is created.
 
     Args:
         hass: Home Assistant instance.
@@ -38,9 +42,9 @@ async def validate_credentials(hass: HomeAssistant, username: str, password: str
     client = EWeatherHomeAssistantApiClient(
         username=username,
         password=password,
-        session=async_create_clientsession(hass),
+        session=async_get_clientsession(hass),
     )
-    await client.async_get_data()  # May raise authentication/communication errors
+    await client.async_validate_credentials()
 
 
 __all__ = [

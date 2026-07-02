@@ -18,8 +18,10 @@ from typing import Any
 import voluptuous as vol
 
 from custom_components.hacs_eweather.const import (
+    CONF_ENABLE_DEBUGGING,
     CONF_OFFICIAL_ONLY,
     CONF_POST_COUNT,
+    CONF_UPDATE_INTERVAL_HOURS,
     DEFAULT_ENABLE_DEBUGGING,
     DEFAULT_OFFICIAL_ONLY,
     DEFAULT_POST_COUNT,
@@ -43,8 +45,8 @@ def get_options_schema(defaults: Mapping[str, Any] | None = None) -> vol.Schema:
     return vol.Schema(
         {
             vol.Optional(
-                "update_interval_hours",
-                default=defaults.get("update_interval_hours", DEFAULT_UPDATE_INTERVAL_HOURS),
+                CONF_UPDATE_INTERVAL_HOURS,
+                default=defaults.get(CONF_UPDATE_INTERVAL_HOURS, DEFAULT_UPDATE_INTERVAL_HOURS),
             ): selector.NumberSelector(
                 selector.NumberSelectorConfig(
                     min=0.25,
@@ -71,8 +73,8 @@ def get_options_schema(defaults: Mapping[str, Any] | None = None) -> vol.Schema:
                 ),
             ),
             vol.Optional(
-                "enable_debugging",
-                default=defaults.get("enable_debugging", DEFAULT_ENABLE_DEBUGGING),
+                CONF_ENABLE_DEBUGGING,
+                default=defaults.get(CONF_ENABLE_DEBUGGING, DEFAULT_ENABLE_DEBUGGING),
             ): selector.BooleanSelector(),
         },
     )

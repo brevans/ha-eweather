@@ -8,9 +8,12 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
+from homeassistant.components.diagnostics import REDACTED
 from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
 from homeassistant.helpers import device_registry as dr, entity_registry as er
 from homeassistant.helpers.redact import async_redact_data
+
+from .const import FIREBASE_AUTH_URL, FIRESTORE_URL
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
@@ -49,14 +52,17 @@ async def async_get_config_entry_diagnostics(
         device_info.append(
             {
                 "id": device.id,
-                "name": device.name,
+                # The device name is the entry title, i.e. the account email.
+                "name": REDACTED,
                 "manufacturer": device.manufacturer,
                 "model": device.model,
                 "sw_version": device.sw_version,
                 "entity_count": len(entities),
                 "entities": [
                     {
-                        "entity_id": entity.entity_id,
+                        # entity_id is omitted: ids registered before the device was
+                        # given a static name embed the slugified account email.
+                        "unique_id": entity.unique_id,
                         "platform": entity.platform,
                         "original_name": entity.original_name,
                         "disabled": entity.disabled,
@@ -76,7 +82,8 @@ async def async_get_config_entry_diagnostics(
 
     # API client information (no sensitive data)
     api_info = {
-        "base_endpoint": "https://jsonplaceholder.typicode.com",
+        "auth_endpoint": FIREBASE_AUTH_URL,
+        "firestore_endpoint": FIRESTORE_URL,
         "has_credentials": bool(client._username),  # noqa: SLF001
     }
 
@@ -95,9 +102,10 @@ async def async_get_config_entry_diagnostics(
         "version": entry.version,
         "minor_version": entry.minor_version,
         "domain": entry.domain,
-        "title": entry.title,
+        # The entry title and unique_id are both the account email.
+        "title": REDACTED,
         "state": str(entry.state),
-        "unique_id": entry.unique_id,
+        "unique_id": REDACTED,
         "disabled_by": entry.disabled_by.value if entry.disabled_by else None,
         "data": async_redact_data(entry.data, TO_REDACT),
         "options": async_redact_data(entry.options, TO_REDACT),
@@ -109,16 +117,15 @@ async def async_get_config_entry_diagnostics(
         "last_exception_type": (type(coordinator.last_exception).__name__ if coordinator.last_exception else None),
     }
 
-    # Current data sample (sanitized)
+    # Current data shape (counts only — no post content or author identifiers)
     data_sample = {}
-    if coordinator.data:
-        if isinstance(coordinator.data, dict):
-            # Include sample data but sanitize sensitive info
-            data_sample = {
-                "title": coordinator.data.get("title"),
-                "body_length": len(coordinator.data.get("body", "")) if coordinator.data.get("body") else 0,
-                "has_user_id": "userId" in coordinator.data,
-            }
+    if isinstance(coordinator.data, dict):
+        posts = coordinator.data.get("posts")
+        newest = posts[0] if isinstance(posts, list) and posts and isinstance(posts[0], dict) else {}
+        data_sample = {
+            "counts": coordinator.data.get("counts"),
+            "newest_post_created": newest.get("created"),
+        }
 
     return {
         "entry": entry_info,

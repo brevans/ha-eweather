@@ -14,8 +14,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
-from slugify import slugify
-
 from custom_components.hacs_eweather.config_flow_handler.schemas import (
     get_reauth_schema,
     get_reconfigure_schema,
@@ -23,6 +21,7 @@ from custom_components.hacs_eweather.config_flow_handler.schemas import (
 )
 from custom_components.hacs_eweather.config_flow_handler.validators import validate_credentials
 from custom_components.hacs_eweather.const import DOMAIN, LOGGER
+from custom_components.hacs_eweather.utils import normalize_username
 from homeassistant import config_entries
 from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
 from homeassistant.loader import async_get_loaded_integration
@@ -91,6 +90,10 @@ class EWeatherHomeAssistantConfigFlowHandler(config_entries.ConfigFlow, domain=D
         errors: dict[str, str] = {}
 
         if user_input is not None:
+            # Abort on duplicates before hitting the network.
+            await self.async_set_unique_id(normalize_username(user_input[CONF_USERNAME]))
+            self._abort_if_unique_id_configured()
+
             try:
                 await validate_credentials(
                     self.hass,
@@ -100,12 +103,6 @@ class EWeatherHomeAssistantConfigFlowHandler(config_entries.ConfigFlow, domain=D
             except Exception as exception:  # noqa: BLE001
                 errors["base"] = self._map_exception_to_error(exception)
             else:
-                # Set unique ID based on username
-                # NOTE: This is just an example - use a proper unique ID in production
-                # See: https://developers.home-assistant.io/docs/config_entries_config_flow_handler#unique-ids
-                await self.async_set_unique_id(slugify(user_input[CONF_USERNAME]))
-                self._abort_if_unique_id_configured()
-
                 return self.async_create_entry(
                     title=user_input[CONF_USERNAME],
                     data=user_input,
@@ -144,6 +141,11 @@ class EWeatherHomeAssistantConfigFlowHandler(config_entries.ConfigFlow, domain=D
         errors: dict[str, str] = {}
 
         if user_input is not None:
+            # Reconfigure must stay on the same account — switching accounts is
+            # remove + re-add, so entities keep consistent identity.
+            await self.async_set_unique_id(normalize_username(user_input[CONF_USERNAME]))
+            self._abort_if_unique_id_mismatch(reason="wrong_account")
+
             try:
                 await validate_credentials(
                     self.hass,
@@ -203,6 +205,10 @@ class EWeatherHomeAssistantConfigFlowHandler(config_entries.ConfigFlow, domain=D
         errors: dict[str, str] = {}
 
         if user_input is not None:
+            # Reauth must stay on the same account, not silently swap in another one.
+            await self.async_set_unique_id(normalize_username(user_input[CONF_USERNAME]))
+            self._abort_if_unique_id_mismatch(reason="wrong_account")
+
             try:
                 await validate_credentials(
                     self.hass,

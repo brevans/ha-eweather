@@ -8,10 +8,14 @@ into Home Assistant, filtering out community/user-submitted posts.
 
 ## Status / start here
 
-**Current phase:** Milestones 1–2 **done and verified**. Discovery + contract locked
-(`docs/API_CONTRACT.md`), and the API client is confirmed working end-to-end against
-live Firebase. Milestones 3–4 (integration core + sensor) are implemented; next up is
-testing on a running HA instance and polish.
+**Current phase:** Milestones 1–4 **done and verified**. The integration was installed
+on the owner's real HA instance on **2026-07-02** and the `Forecast feed` sensor
+populated (25 official posts), confirming config flow, coordinator, and sensor
+end-to-end. A hardening pass (2026-07-02) fixed sign-in error classification
+(transient vs credential), a config-flow session leak, unique_id normalization plus a
+reauth account-mismatch guard, wired up the `enable_debugging` option, added
+diagnostics redaction, and removed dead template code (`repairs.py`). The README has
+been rewritten (real feature set + personal-use disclaimer) as part of this pass.
 
 **Discovery outcome (CONFIRMED):** the app is **Flutter** but the backend is
 **Firebase** (the easy case). Auth = **email/password** via Firebase Auth REST. The
@@ -29,12 +33,10 @@ run returned 150 posts → 25 official (current heat-wave forecasts from "Admin 
 
 **Next actions, in order:**
 
-1. Install/enable the integration in the running HA dev instance (`./script/develop`),
-   add it with the throwaway account, and confirm the `Forecast feed` sensor populates.
-2. Consider tests (`tests/`) for `filter_official` + config flow (fixtures in
-   `docs/samples/`) — only when you want them.
-3. Milestone 6 polish: README install steps + personal-use disclaimer, HACS validation,
-   tag a release. (Lovelace card remains deferred / out of scope.)
+1. Unit tests for the API client filter/parsing and the config flow (fixtures from
+   `docs/samples/`).
+2. Milestone 6 polish: confirm HACS + hassfest validation is green, tag a v0.1.0
+   release. (Lovelace card remains deferred / out of scope.)
 
 Keep this file updated: tick the checkboxes and move the "Current phase" line as
 work lands.
@@ -63,15 +65,15 @@ work lands.
 
 ## Decisions locked in
 
-| Topic             | Decision                                                                                                                                                   |
-| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Distribution      | HACS **custom repository**, type _Integration_. Runs locally on HA.                                                                                        |
-| Integration style | Full **custom integration** with config flow + options flow.                                                                                               |
-| Discovery method  | **Static analysis of the APK** (no device available) + a **local Python probe** run by the user against the real API.                                      |
-| Credentials       | Entered in the HA config flow, stored in HA's encrypted config entry. Probe script reads from a git-ignored `.env`. Never hardcoded, logged, or committed. |
-| Filtering         | Keep official posts, drop user-submitted. Exact discriminator (author id vs. category vs. role flag) is **TBD from discovery**.                            |
-| Backend etiquette | Conservative default poll interval (15–30 min), cache responses and images, send an honest `User-Agent`. Single low-frequency client.                      |
-| Card              | Deferred (see out of scope).                                                                                                                               |
+| Topic             | Decision                                                                                                                                                                                    |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Distribution      | HACS **custom repository**, type _Integration_. Runs locally on HA.                                                                                                                         |
+| Integration style | Full **custom integration** with config flow + options flow.                                                                                                                                |
+| Discovery method  | **Static analysis of the APK** (no device available) + a **local Python probe** run by the user against the real API.                                                                       |
+| Credentials       | Entered in the HA config flow, stored in HA's config entry storage (access-restricted, not encrypted). Probe script reads from a git-ignored `.env`. Never hardcoded, logged, or committed. |
+| Filtering         | Keep official posts, drop user-submitted. Exact discriminator (author id vs. category vs. role flag) is **TBD from discovery**.                                                             |
+| Backend etiquette | Conservative default poll interval (15–30 min), cache responses and images, send an honest `User-Agent`. Single low-frequency client.                                                       |
+| Card              | Deferred (see out of scope).                                                                                                                                                                |
 
 ---
 
@@ -244,52 +246,56 @@ for async).
 
 ### Milestone 0 — Scaffolding
 
-- [ ] Repo skeleton, `LICENSE`, `.gitignore` (ignore `reference/*.apk`, `.env`, `__pycache__/`, `.venv/`).
-- [ ] `hacs.json`, minimal `manifest.json`, placeholder `__init__.py` + `const.py`.
-- [ ] README stub with the install-via-custom-repo steps and a personal-use disclaimer.
-- [ ] CI: HACS validate + hassfest.
+- [x] Repo skeleton, `LICENSE`, `.gitignore` (ignore `reference/*.apk`, `.env`, `__pycache__/`, `.venv/`).
+- [x] `hacs.json`, minimal `manifest.json`, placeholder `__init__.py` + `const.py`.
+- [x] README stub with the install-via-custom-repo steps and a personal-use disclaimer
+      (README fully rewritten 2026-07-02 with the real feature set + disclaimer).
+- [x] CI: HACS validate + hassfest.
 - **Done:** repo can be added to HACS as a custom Integration and loads without error (no entities yet).
 
 ### Milestone 1 — API discovery
 
-- [ ] `tools/extract_api.sh`: unzip, fingerprint, grep (Part A).
-- [ ] `scripts/probe.py`: login + feed capture (Part B).
-- [ ] `docs/API_CONTRACT.md`: base URL, auth flow + token lifetime, feed endpoint(s), pagination, **official-vs-user field**.
-- [ ] `docs/samples/`: one official + one user post, sanitized.
+- [x] `tools/extract_api.sh`: unzip, fingerprint, grep (Part A) (superseded: findings captured directly in API_CONTRACT.md; helper script not kept).
+- [x] `scripts/probe.py`: login + feed capture (Part B) (lives at `tools/probe.py`).
+- [x] `docs/API_CONTRACT.md`: base URL, auth flow + token lifetime, feed endpoint(s), pagination, **official-vs-user field**.
+- [x] `docs/samples/`: one official + one user post, sanitized.
 - **Done:** we can authenticate and fetch the feed from a script, and we know how to identify official posts.
 
 ### Milestone 2 — API client (`api.py`)
 
-- [ ] `EweatherClient.login()` with token/cookie caching + expiry.
-- [ ] `fetch_feed()` with pagination and error handling (raise typed errors for auth vs. transient).
-- [ ] `filter_official()` per the discovery field; configurable.
-- [ ] Optional `fetch_image()` returning bytes (for later caching).
+- [x] `EweatherClient.login()` with token/cookie caching + expiry.
+- [x] `fetch_feed()` with pagination and error handling (raise typed errors for auth vs. transient).
+- [x] `filter_official()` per the discovery field; configurable.
+- [x] Optional `fetch_image()` returning bytes (for later caching) (not needed — image URLs are public pass-through).
 - [ ] Unit tests against `tests/fixtures/`.
 - **Done:** client returns a clean list of official post objects from recorded fixtures and live.
 
 ### Milestone 3 — Integration core
 
-- [ ] `config_flow.py`: collect + validate username/password (test login during the flow).
-- [ ] `coordinator.py`: `DataUpdateCoordinator` polling at the configured interval, backoff, **re-auth on 401**.
-- [ ] `__init__.py`: `async_setup_entry` / `async_unload_entry`, store coordinator.
-- [ ] Finalized `manifest.json`.
+- [x] `config_flow.py`: collect + validate username/password (test login during the flow).
+- [x] `coordinator.py`: `DataUpdateCoordinator` polling at the configured interval, backoff, **re-auth on 401**.
+- [x] `__init__.py`: `async_setup_entry` / `async_unload_entry`, store coordinator.
+- [x] Finalized `manifest.json`.
 - **Done:** integration sets up from the UI with credentials; the entry loads and the coordinator fetches without error.
 
 ### Milestone 4 — Sensor entity
 
-- [ ] `sensor.py`: `sensor.eweather_feed`; **state = latest post timestamp or count** (≤255 chars); **attributes = posts[]** (title, timestamp, body, image, url, author).
-- [ ] Image handling: if image URLs are auth-gated, cache to `config/www/eweather/…` and expose `/local/eweather/…`; otherwise pass URLs through.
+- [x] `sensor.py`: `sensor.eweather_feed`; **state = latest post timestamp or count** (≤255 chars); **attributes = posts[]** (title, timestamp, body, image, url, author).
+- [x] Image handling: if image URLs are auth-gated, cache to `config/www/eweather/…` and expose `/local/eweather/…`; otherwise pass URLs through (image URLs are public — passed through as-is, no caching needed).
 - **Done:** posts visible in Developer Tools → States with correct filtering.
 
 ### Milestone 5 — Options flow
 
-- [ ] Options: post count, category/filter selection, poll interval, show/cache photos.
-- [ ] Coordinator + sensor respect options; changes apply without a restart.
+- [x] Options: post count, category/filter selection, poll interval, show/cache photos
+      (interval + official-only filter + post count shipped; `enable_debugging` now
+      functional as of 2026-07-02; show/cache photos dropped — images are public
+      pass-through).
+- [x] Coordinator + sensor respect options; changes apply without a restart.
 - **Done:** settings adjustable in the UI and honored.
 
 ### Milestone 6 — Polish & release
 
-- [ ] README: install, configure, troubleshoot; disclaimer about ToS / personal use.
+- [x] README: install, configure, troubleshoot; disclaimer about ToS / personal use.
 - [ ] Passing HACS + hassfest validation; tag a release.
 - **Done:** clean install from scratch via HACS on a real HA instance.
 
@@ -299,8 +305,8 @@ _(Card + dashboard work is a separate effort after Milestone 6.)_
 
 ## Credential & security rules
 
-- Credentials are entered in the **config flow** and live in HA's encrypted
-  config entry. Never write them to YAML.
+- Credentials are entered in the **config flow** and live in HA's config entry
+  storage (access-restricted, not encrypted at rest). Never write them to YAML.
 - `scripts/probe.py` reads creds from a **git-ignored `.env`**. Never hardcode.
 - Never log credentials or tokens. Redact before writing anything to `docs/`.
 - **Do not commit the APK** (`reference/*.apk` is git-ignored) — size and

@@ -45,6 +45,8 @@ ADMIN_CACHE_TTL_SECONDS = 6 * 60 * 60
 # --- Configuration / options ---
 CONF_POST_COUNT = "post_count"
 CONF_OFFICIAL_ONLY = "official_only"
+CONF_UPDATE_INTERVAL_HOURS = "update_interval_hours"
+CONF_ENABLE_DEBUGGING = "enable_debugging"
 
 # Default configuration values
 DEFAULT_UPDATE_INTERVAL_HOURS = 1

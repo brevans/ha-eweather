@@ -5,6 +5,16 @@ from __future__ import annotations
 import re
 
 
+def normalize_username(username: str) -> str:
+    """
+    Normalize an account email for use as a config-entry unique ID.
+
+    Emails are case-insensitive for our purposes, and normalizing (rather than
+    slugifying) keeps distinct addresses distinct.
+    """
+    return username.strip().lower()
+
+
 def slugify_name(name: str) -> str:
     """
     Convert a name to a slug.

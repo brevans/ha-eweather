@@ -64,7 +64,9 @@ class EWeatherHomeAssistantEntity(CoordinatorEntity[EWeatherHomeAssistantDataUpd
                     coordinator.config_entry.entry_id,
                 ),
             },
-            name=coordinator.config_entry.title,
+            # Static name: the entry title is the account email, which must not
+            # bleed into the device name or suggested entity_ids.
+            name="eweather",
             manufacturer="eweather",
             model="Forecast feed",
             configuration_url="https://eweatherapp.com",

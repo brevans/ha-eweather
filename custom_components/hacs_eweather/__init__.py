@@ -19,6 +19,7 @@ https://developers.home-assistant.io/docs/creating_integration_manifest
 from __future__ import annotations
 
 from datetime import timedelta
+import logging
 from typing import TYPE_CHECKING
 
 from homeassistant.const import CONF_PASSWORD, CONF_USERNAME, Platform
@@ -27,9 +28,17 @@ import homeassistant.helpers.config_validation as cv
 from homeassistant.loader import async_get_loaded_integration
 
 from .api import EWeatherHomeAssistantApiClient
-from .const import DEFAULT_UPDATE_INTERVAL_HOURS, DOMAIN, LOGGER
+from .const import (
+    CONF_ENABLE_DEBUGGING,
+    CONF_UPDATE_INTERVAL_HOURS,
+    DEFAULT_ENABLE_DEBUGGING,
+    DEFAULT_UPDATE_INTERVAL_HOURS,
+    DOMAIN,
+    LOGGER,
+)
 from .coordinator import EWeatherHomeAssistantDataUpdateCoordinator
 from .data import EWeatherHomeAssistantData
+from .utils import normalize_username
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
@@ -79,6 +88,25 @@ async def async_setup_entry(
     For more information:
     https://developers.home-assistant.io/docs/config_entries_index/#setting-up-an-entry
     """
+    # One-time migration: the unique_id used to be a slugified email (template
+    # placeholder); it is now the normalized email itself.
+    expected_unique_id = normalize_username(entry.data[CONF_USERNAME])
+    if entry.unique_id != expected_unique_id:
+        hass.config_entries.async_update_entry(entry, unique_id=expected_unique_id)
+
+    # The options listener reloads the entry, so the debug toggle applies without
+    # a restart. The package logger is shared, so honor the toggle of ANY entry;
+    # levels set via HA's logger integration always win (its setLevel is a no-op
+    # for user-overridden names).
+    if any(
+        e.options.get(CONF_ENABLE_DEBUGGING, DEFAULT_ENABLE_DEBUGGING)
+        for e in hass.config_entries.async_entries(DOMAIN)
+        if e.disabled_by is None
+    ):
+        LOGGER.setLevel(logging.DEBUG)
+    elif LOGGER.level == logging.DEBUG:
+        LOGGER.setLevel(logging.NOTSET)
+
     # Initialize client first
     client = EWeatherHomeAssistantApiClient(
         username=entry.data[CONF_USERNAME],  # From config flow setup
@@ -88,7 +116,7 @@ async def async_setup_entry(
 
     # Initialize coordinator with config_entry
     update_interval_hours = float(
-        entry.options.get("update_interval_hours", DEFAULT_UPDATE_INTERVAL_HOURS),
+        entry.options.get(CONF_UPDATE_INTERVAL_HOURS, DEFAULT_UPDATE_INTERVAL_HOURS),
     )
     coordinator = EWeatherHomeAssistantDataUpdateCoordinator(
         hass=hass,

@@ -54,6 +54,14 @@ _AUTH_ERROR_CODES = frozenset(
     },
 )
 
+# Firebase Auth error codes for transient conditions that should be retried later.
+_TRANSIENT_ERROR_CODES = frozenset(
+    {
+        "TOO_MANY_ATTEMPTS_TRY_LATER",
+        "QUOTA_EXCEEDED",
+    },
+)
+
 # Refresh the ID token this many seconds before its stated expiry.
 _TOKEN_REFRESH_MARGIN = 60
 
@@ -151,6 +159,16 @@ class EWeatherHomeAssistantApiClient:
             "official": official,
             "counts": {"total": len(posts), "official": len(official)},
         }
+
+    async def async_validate_credentials(self) -> None:
+        """Prove the credentials work by signing in (no feed fetch).
+
+        Raises:
+            EWeatherHomeAssistantApiClientAuthenticationError: If the credentials are bad.
+            EWeatherHomeAssistantApiClientCommunicationError: If the backend is unreachable.
+            EWeatherHomeAssistantApiClientError: For other API errors.
+        """
+        await self._ensure_token()
 
     def filter_official(
         self,
@@ -262,10 +280,23 @@ class EWeatherHomeAssistantApiClient:
                 "returnSecureToken": True,
             },
         )
-        if status != 200 or not isinstance(data, dict) or "idToken" not in data:
-            raise EWeatherHomeAssistantApiClientAuthenticationError(self._auth_error_message(data))
-        self._store_tokens(data["idToken"], data.get("refreshToken"), data.get("expiresIn"))
-        self._uid = data.get("localId")
+        if status == 200 and isinstance(data, dict) and "idToken" in data:
+            self._store_tokens(data["idToken"], data.get("refreshToken"), data.get("expiresIn"))
+            self._uid = data.get("localId")
+            return
+
+        # Only genuine credential errors may raise the authentication exception: the
+        # coordinator turns it into a reauth prompt, which must not fire for backend
+        # hiccups (5xx, rate limiting) — those must stay retryable.
+        code = self._error_code(data)
+        if code in _AUTH_ERROR_CODES:
+            msg = f"Invalid credentials ({code})"
+            raise EWeatherHomeAssistantApiClientAuthenticationError(msg)
+        if status >= 500 or status == 429 or code in _TRANSIENT_ERROR_CODES:
+            msg = f"Sign-in temporarily unavailable ({code or status})"
+            raise EWeatherHomeAssistantApiClientCommunicationError(msg)
+        msg = f"Unexpected sign-in response ({code or status})"
+        raise EWeatherHomeAssistantApiClientError(msg)
 
     async def _refresh(self) -> None:
         """Exchange the refresh token for a fresh ID token; fall back to sign-in."""
@@ -295,17 +326,21 @@ class EWeatherHomeAssistantApiClient:
         self._token_expiry = time.monotonic() + max(ttl - _TOKEN_REFRESH_MARGIN, 0)
 
     @staticmethod
-    def _auth_error_message(data: Any) -> str:
-        """Build an auth error message from a Firebase error payload."""
+    def _error_code(data: Any) -> str:
+        """Extract the Firebase error code from an error payload.
+
+        Firebase sometimes appends detail after the code, e.g.
+        ``TOO_MANY_ATTEMPTS_TRY_LATER : Access to this account has been ...``.
+        """
         if isinstance(data, dict):
             error = data.get("error")
             if isinstance(error, dict):
-                code = error.get("message", "")
-                if code in _AUTH_ERROR_CODES:
-                    return f"Invalid credentials ({code})"
-                if code:
-                    return f"Authentication failed ({code})"
-        return "Invalid credentials"
+                message = error.get("message")
+                if isinstance(message, str):
+                    parts = message.split()
+                    if parts:
+                        return parts[0].rstrip(":")
+        return ""
 
     # -- HTTP + Firestore decoding ------------------------------------------------
 

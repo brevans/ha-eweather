@@ -76,7 +76,6 @@ class EWeatherHomeAssistantFeedSensor(SensorEntity, EWeatherHomeAssistantEntity)
             "posts": posts,
             "official_count": counts.get("official"),
             "total_count": counts.get("total"),
-            "collection": data.get("collection"),
         }
 
     @staticmethod

@@ -30,7 +30,11 @@
       "unknown": "Unknown error occurred."
     },
     "abort": {
-      "already_configured": "This account is already configured."
+      "already_configured": "This account is already configured.",
+      "already_in_progress": "Configuration flow is already in progress.",
+      "reauth_successful": "Reauthentication was successful.",
+      "reconfigure_successful": "Reconfiguration was successful.",
+      "wrong_account": "These credentials belong to a different account. To switch accounts, remove the integration and add it again."
     }
   },
   "options": {
