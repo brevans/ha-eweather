@@ -19,7 +19,6 @@
   // Runs on every container creation — installs all dependencies.
   "postCreateCommand": "bash .devcontainer/post-create.sh",
   // Runs on every client attach — detects fresh blueprints and triggers initialization.
-  "postAttachCommand": "bash .devcontainer/post-attach.sh",
   "containerEnv": {
     // Python runtime variables — must be set for ALL Python processes, including those spawned
     // by VS Code extensions (Pylance, test runner, Ruff) that never go through our shell scripts.
@@ -211,8 +210,12 @@
     // Docker manages this volume separately from the workspace — npm ci runs fast on overlay FS.
     "source=${localWorkspaceFolderBasename}_node_modules,target=${containerWorkspaceFolder}/node_modules,type=volume",
     // Mount host gitconfig for local development (ignored in Codespaces)
-    // In Codespaces, GitHub automatically configures Git with your account
-    "source=${localEnv:HOME}${localEnv:USERPROFILE}/.gitconfig,target=/home/vscode/.gitconfig.host,type=bind,consistency=cached,readonly"
+    // In Codespaces, GitHub automatically configures Git with your account.
+    // setup-git.sh imports name/email/aliases/signing key from this into the container's ~/.gitconfig.
+    "source=${localEnv:HOME}${localEnv:USERPROFILE}/.gitconfig,target=/home/vscode/.gitconfig.host,type=bind,consistency=cached,readonly",
+    // Mount host SSH keys so Git can authenticate to remotes (e.g. git@github.com) from inside the container.
+    // Left writable so SSH can append first-connect host keys to known_hosts. Ignored in Codespaces.
+    "source=${localEnv:HOME}${localEnv:USERPROFILE}/.ssh,target=/home/vscode/.ssh,type=bind,consistency=cached"
   ],
   "remoteUser": "vscode"
 }

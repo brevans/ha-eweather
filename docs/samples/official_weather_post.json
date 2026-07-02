@@ -1,0 +1,22 @@
+{
+  "note": "Sanitized example of an OFFICIAL post (author's User.admin == true). Real uids, names, and Storage tokens have been replaced with placeholders. Re-run tools/probe.py locally for live data.",
+  "sender": "ADMIN_UID_EXAMPLE",
+  "category": "weather",
+  "title": "⚠️🌡️ A dangerous and prolonged heat wave begins today. Highs in the mid-90s with heat index near 105.",
+  "text": "Stay hydrated and check on neighbors. Relief arrives late in the week.",
+  "created": "2026-07-02T12:46:10.712566Z",
+  "images": [
+    {
+      "original": "https://firebasestorage.googleapis.com/v0/b/e-weather-api.appspot.com/o/post%2Forigin%2FEXAMPLE_0.jpg?alt=media&token=00000000-0000-0000-0000-000000000000",
+      "small": "https://firebasestorage.googleapis.com/v0/b/e-weather-api.appspot.com/o/post%2Fsmall%2FEXAMPLE_0.jpg?alt=media&token=00000000-0000-0000-0000-000000000000",
+      "isVideo": false,
+      "ratio": 0.75,
+      "created": "2026-07-02T12:46:10.712566Z"
+    }
+  ],
+  "likes": 46,
+  "comments": 2,
+  "views": 312,
+  "notification": false,
+  "__doc_id__": "EXAMPLE_OFFICIAL_POST"
+}

@@ -1,0 +1,71 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "description": "Sign in with your eweather account. See the [documentation]({documentation_url}) for help.",
+        "data": {
+          "username": "Email",
+          "password": "Password"
+        }
+      },
+      "reconfigure": {
+        "description": "Update the eweather account credentials for this integration.",
+        "data": {
+          "username": "Email",
+          "password": "Password"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Reauthenticate eweather",
+        "description": "The credentials for {username} are no longer valid. Please provide updated credentials to restore access.",
+        "data": {
+          "username": "Email",
+          "password": "Password"
+        }
+      }
+    },
+    "error": {
+      "auth": "Email or password is incorrect.",
+      "connection": "Unable to connect to the eweather backend.",
+      "unknown": "Unknown error occurred."
+    },
+    "abort": {
+      "already_configured": "This account is already configured."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "eweather options",
+        "description": "Customize how the eweather feed is fetched and displayed.",
+        "data": {
+          "update_interval_hours": "Update interval (hours)",
+          "official_only": "Official posts only",
+          "post_count": "Number of posts to expose",
+          "enable_debugging": "Enable debug logging"
+        },
+        "data_description": {
+          "update_interval_hours": "How often to refresh the feed (0.25 to 24 hours).",
+          "official_only": "Keep only official eweather posts and drop user-submitted ones.",
+          "post_count": "How many posts to include in the sensor's attributes.",
+          "enable_debugging": "Enable detailed debug logging for troubleshooting."
+        }
+      }
+    }
+  },
+  "exceptions": {
+    "authentication_failed": {
+      "message": "Authentication failed during data update."
+    },
+    "update_failed": {
+      "message": "Failed to update data from the eweather backend."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "feed": {
+        "name": "Forecast feed"
+      }
+    }
+  }
+}
