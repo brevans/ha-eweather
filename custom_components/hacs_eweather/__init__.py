@@ -20,8 +20,11 @@ from __future__ import annotations
 
 from datetime import timedelta
 import logging
+from pathlib import Path
 from typing import TYPE_CHECKING
 
+from homeassistant.components.frontend import add_extra_js_url
+from homeassistant.components.http import StaticPathConfig
 from homeassistant.const import CONF_PASSWORD, CONF_USERNAME, Platform
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 import homeassistant.helpers.config_validation as cv
@@ -42,6 +45,7 @@ from .utils import normalize_username
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
+    from homeassistant.helpers.typing import ConfigType
 
     from .data import EWeatherHomeAssistantConfigEntry
 
@@ -51,6 +55,29 @@ PLATFORMS: list[Platform] = [
 
 # This integration is configured via config entries only
 CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
+
+# Bundled Lovelace card, served by the integration and auto-registered with the
+# frontend so no manual resource configuration is needed.
+CARD_FILENAME = "eweather-feed-card.js"
+CARD_URL = f"/{DOMAIN}/{CARD_FILENAME}"
+
+
+async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
+    """Serve and register the bundled Lovelace card (runs once per HA start)."""
+    await hass.http.async_register_static_paths(
+        [
+            StaticPathConfig(
+                CARD_URL,
+                str(Path(__file__).parent / "www" / CARD_FILENAME),
+                # Long-lived caching is safe: the version query string below
+                # changes the URL on every upgrade.
+                cache_headers=True,
+            ),
+        ],
+    )
+    integration = async_get_loaded_integration(hass, DOMAIN)
+    add_extra_js_url(hass, f"{CARD_URL}?v={integration.version}")
+    return True
 
 
 async def async_setup_entry(

@@ -50,6 +50,12 @@ filterwarnings = [
     # Treat warnings as errors to catch issues early
     "error",
     # Ignore specific warnings from third-party libraries as needed
+    # aiohttp warns about string (non-AppKey) app keys; Home Assistant's own `http`
+    # component (a manifest dependency of this integration) triggers it during setup.
+    "ignore:It is recommended to use web.AppKey instances for keys:UserWarning",
+    # Home Assistant's async_get_clientsession() wraps ClientSession.close, which
+    # newer aiohttp deprecates; triggered whenever the integration builds its client.
+    "ignore:Setting custom ClientSession.close attribute is discouraged:DeprecationWarning",
     # "ignore:.*custom_components.* is using deprecated.*:DeprecationWarning",
 ]
 

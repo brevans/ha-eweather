@@ -17,6 +17,14 @@ reauth account-mismatch guard, wired up the `enable_debugging` option, added
 diagnostics redaction, and removed dead template code (`repairs.py`). The README has
 been rewritten (real feature set + personal-use disclaimer) as part of this pass.
 
+**Card (2026-07-02):** the previously-deferred Lovelace card is now implemented —
+`eweather-feed-card` ships inside the integration
+(`custom_components/hacs_eweather/www/`), is served and registered automatically via
+`async_setup` (static path + `add_extra_js_url`), and shows the newest post with
+relative/absolute timestamps plus a swipeable photo carousel and older-post paging.
+Brand icon assets recreated from the app artwork live in `assets/brands/hacs_eweather/`,
+ready to submit to the `home-assistant/brands` repo (`custom_integrations/hacs_eweather/`).
+
 **Discovery outcome (CONFIRMED):** the app is **Flutter** but the backend is
 **Firebase** (the easy case). Auth = **email/password** via Firebase Auth REST. The
 forecast feed is the Firestore **`Post`** collection; images are public Storage URLs
@@ -36,7 +44,7 @@ run returned 150 posts → 25 official (current heat-wave forecasts from "Admin 
 1. Unit tests for the API client filter/parsing and the config flow (fixtures from
    `docs/samples/`).
 2. Milestone 6 polish: confirm HACS + hassfest validation is green, tag a v0.1.0
-   release. (Lovelace card remains deferred / out of scope.)
+   release.
 
 Keep this file updated: tick the checkboxes and move the "Current phase" line as
 work lands.
@@ -56,8 +64,8 @@ work lands.
 
 ### Out of scope (for now)
 
-- **Lovelace card / dashboard design — deferred** until the integration is
-  working and emitting data. Do not build the card yet.
+- ~~**Lovelace card / dashboard design — deferred**~~ Done (2026-07-02): the
+  integration now bundles and auto-registers `eweather-feed-card`.
 - Posting/commenting or any write actions back to eweather. Read-only.
 - Re-publishing eweather content anywhere outside this HA instance.
 
@@ -73,7 +81,7 @@ work lands.
 | Credentials       | Entered in the HA config flow, stored in HA's config entry storage (access-restricted, not encrypted). Probe script reads from a git-ignored `.env`. Never hardcoded, logged, or committed. |
 | Filtering         | Keep official posts, drop user-submitted. Exact discriminator (author id vs. category vs. role flag) is **TBD from discovery**.                                                             |
 | Backend etiquette | Conservative default poll interval (15–30 min), cache responses and images, send an honest `User-Agent`. Single low-frequency client.                                                       |
-| Card              | Deferred (see out of scope).                                                                                                                                                                |
+| Card              | Bundled with the integration: `eweather-feed-card`, served + auto-registered by `async_setup` (shipped 2026-07-02).                                                                         |
 
 ---
 
@@ -101,7 +109,8 @@ scripts/probe.py (user runs w/ creds) ──────┘     (base URL, auth 
                  attributes = posts[] {title, ts, body, image, url, author}
                                                         │
                                                         ▼
-                 [DEFERRED] Lovelace card + input_* helper controls
+                 eweather-feed-card (bundled Lovelace card: newest post,
+                 timestamps, photo carousel)
 ```
 
 ---

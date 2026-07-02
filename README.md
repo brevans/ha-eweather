@@ -22,7 +22,7 @@ One sensor: **Forecast feed**. Its state is the number of posts exposed, and the
 
 Each entry in `posts` has: `id`, `title`, `text`, `category`, `created`, `author`, `official`, `likes`, `comments`, `views`, `image`, `images`.
 
-Post images are public URLs, so they can be used directly in cards. There is no dedicated Lovelace card (yet) — the `posts` attribute works fine with a template-driven markdown card.
+Post images are public URLs, so they can be used directly in cards — and the integration ships its own dashboard card (below).
 
 The integration registers no services and installs no extra Python packages. Requires Home Assistant **2026.4.0** or newer.
 
@@ -61,6 +61,31 @@ After setup, click **Configure** on the integration to adjust:
 | `enable_debugging`      | off     | Sets this integration's logger to debug level            |
 
 Option changes apply without a restart.
+
+## Dashboard card
+
+The integration bundles a Lovelace card, **EWeather Feed Card**, and registers it automatically — no manual resource configuration needed. It shows the most recent post with its author, category, and timestamp (relative and absolute), and a swipeable carousel for the post's photos (arrows, dots, and touch swipe; tap a photo to open the original). Optional ‹ › paging in the header steps through the older posts in the sensor's attributes.
+
+Add it from the dashboard card picker (search "EWeather"), or in YAML:
+
+```yaml
+type: custom:eweather-feed-card
+entity: sensor.eweather_forecast_feed # check your entity id in Developer Tools → States
+title: eweather
+```
+
+| Option          | Default    | Description                               |
+| --------------- | ---------- | ----------------------------------------- |
+| `entity`        | (required) | The Forecast feed sensor                  |
+| `title`         | `eweather` | Card header title (empty string hides it) |
+| `show_post_nav` | `true`     | Show ‹ › paging through older posts       |
+| `image_height`  | `300`      | Height of the photo carousel in pixels    |
+
+After upgrading the integration, restart Home Assistant and hard-refresh the browser (the card is versioned, so caches bust automatically on release upgrades).
+
+## Integration icon
+
+Brand assets recreated from the official app artwork live in [`assets/brands/hacs_eweather/`](assets/brands/hacs_eweather/). Home Assistant only displays integration icons served from [home-assistant/brands](https://github.com/home-assistant/brands), so the icon appears in the UI once those files are submitted there (as `custom_integrations/hacs_eweather/`) and the PR is merged.
 
 ## Troubleshooting
 
