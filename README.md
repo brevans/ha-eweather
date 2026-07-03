@@ -64,7 +64,7 @@ Option changes apply without a restart.
 
 ## Dashboard card
 
-The integration bundles a Lovelace card, **EWeather Feed Card**, and registers it automatically — no manual resource configuration needed. It shows the most recent post with its author, category, and timestamp (relative and absolute), and a swipeable carousel for the post's photos (arrows, dots, and touch swipe; tap a photo to open the original). Optional ‹ › paging in the header steps through the older posts in the sensor's attributes.
+The integration bundles a Lovelace card, **EWeather Feed Card**, and registers it automatically — no manual resource configuration needed. It shows the most recent post with its author, category, and timestamp (relative and absolute), and a swipeable carousel for the post's photos (arrows, dots, and touch swipe). Tapping a photo opens it full-screen in a lightbox you can swipe/arrow through (Esc or tap to close). Optional ‹ › paging in the header steps through the older posts in the sensor's attributes.
 
 Add it from the dashboard card picker (search "EWeather"), or in YAML:
 
@@ -74,12 +74,13 @@ entity: sensor.eweather_forecast_feed # check your entity id in Developer Tools 
 title: eweather
 ```
 
-| Option          | Default    | Description                               |
-| --------------- | ---------- | ----------------------------------------- |
-| `entity`        | (required) | The Forecast feed sensor                  |
-| `title`         | `eweather` | Card header title (empty string hides it) |
-| `show_post_nav` | `true`     | Show ‹ › paging through older posts       |
-| `image_height`  | `300`      | Height of the photo carousel in pixels    |
+| Option          | Default    | Description                                                                                            |
+| --------------- | ---------- | ------------------------------------------------------------------------------------------------------ |
+| `entity`        | (required) | The Forecast feed sensor                                                                               |
+| `title`         | `eweather` | Card header title (empty string hides it)                                                              |
+| `show_post_nav` | `true`     | Show ‹ › paging through older posts                                                                    |
+| `image_height`  | `300`      | Height of the photo carousel in pixels                                                                 |
+| `image_click`   | `lightbox` | Photo tap action: `lightbox` (view larger in place), `url` (open the original in a new tab), or `none` |
 
 After upgrading the integration, restart Home Assistant and hard-refresh the browser (the card is versioned, so caches bust automatically on release upgrades).
 

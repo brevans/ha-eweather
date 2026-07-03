@@ -15,6 +15,7 @@
  *   title: eweather                         (optional; empty string hides it)
  *   show_post_nav: true                     (optional; ‹ › paging over posts)
  *   image_height: 300                       (optional; carousel height in px)
+ *   image_click: lightbox                   (optional; lightbox | url | none)
  */
 
 const CARD_TAG = "eweather-feed-card";
@@ -24,6 +25,7 @@ const DEFAULTS = {
   title: "eweather",
   show_post_nav: true,
   image_height: 300,
+  image_click: "lightbox",
 };
 
 class EweatherFeedCard extends HTMLElement {
@@ -37,6 +39,7 @@ class EweatherFeedCard extends HTMLElement {
     this._renderKey = null;
     this._touchStartX = null;
     this._touchStartY = null;
+    this._lightbox = null;
   }
 
   setConfig(config) {
@@ -65,6 +68,7 @@ class EweatherFeedCard extends HTMLElement {
 
   disconnectedCallback() {
     window.clearInterval(this._clock);
+    this._closeLightbox();
   }
 
   getCardSize() {
@@ -187,6 +191,8 @@ class EweatherFeedCard extends HTMLElement {
     this._postIndex = index;
     const post = posts[index];
     if (post.id !== this._currentPostId) {
+      // The post being viewed changed or dropped out of the feed.
+      this._closeLightbox();
       this._currentPostId = post.id;
       this._photoIndex = 0;
       this._expanded = false;
@@ -297,6 +303,7 @@ class EweatherFeedCard extends HTMLElement {
         (url, i) => `
         <div class="slide">
           <img src="${escapeHtml(url)}" loading="lazy" data-url="${escapeHtml(url)}"
+            data-index="${i}"
             alt="${escapeHtml(post.title || "Post photo")} (${i + 1} of ${images.length})" />
         </div>`,
       )
@@ -393,7 +400,15 @@ class EweatherFeedCard extends HTMLElement {
 
     root.querySelectorAll(".slide img").forEach((img) => {
       img.addEventListener("click", () => {
-        window.open(img.dataset.url, "_blank", "noopener");
+        const mode = this._config.image_click || DEFAULTS.image_click;
+        if (mode === "none") {
+          return;
+        }
+        if (mode === "url") {
+          window.open(img.dataset.url, "_blank", "noopener");
+          return;
+        }
+        this._openLightbox(images, Number(img.dataset.index) || 0);
       });
     });
 
@@ -429,6 +444,9 @@ class EweatherFeedCard extends HTMLElement {
         { passive: true },
       );
       carousel.addEventListener("keydown", (ev) => {
+        if (this._lightbox) {
+          return; // the lightbox owns arrow keys while open
+        }
         if (ev.key === "ArrowLeft") {
           this._setPhoto(this._photoIndex - 1, images.length);
         } else if (ev.key === "ArrowRight") {
@@ -465,6 +483,125 @@ class EweatherFeedCard extends HTMLElement {
     if (el?.dataset.created) {
       el.textContent = this._relativeTime(new Date(el.dataset.created));
     }
+  }
+
+  // -- Lightbox ---------------------------------------------------------------
+
+  _openLightbox(images, index) {
+    this._closeLightbox();
+
+    // Attached to document.body (not the shadow root) so position:fixed cannot
+    // be trapped by a transformed/contained ancestor in the dashboard layout.
+    const overlay = document.createElement("div");
+    overlay.setAttribute("role", "dialog");
+    overlay.setAttribute("aria-label", "Photo viewer");
+    overlay.style.cssText =
+      "position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.92);" +
+      "display:flex;align-items:center;justify-content:center;";
+    const btn =
+      "position:absolute;border:none;cursor:pointer;" +
+      "background:rgba(255,255,255,0.14);color:#fff;border-radius:50%;" +
+      "width:44px;height:44px;font-size:1.5em;line-height:1;" +
+      "display:flex;align-items:center;justify-content:center;";
+    overlay.innerHTML = `
+      <img style="max-width:94vw;max-height:92vh;object-fit:contain;" />
+      <button class="ew-close" aria-label="Close" style="${btn}top:16px;right:16px;">&#10005;</button>
+      ${
+        images.length > 1
+          ? `<button class="ew-prev" aria-label="Previous photo"
+               style="${btn}left:12px;top:50%;transform:translateY(-50%);">&#8249;</button>
+             <button class="ew-next" aria-label="Next photo"
+               style="${btn}right:12px;top:50%;transform:translateY(-50%);">&#8250;</button>
+             <div class="ew-counter" style="position:absolute;bottom:18px;left:0;right:0;
+               text-align:center;color:#fff;font-size:0.9em;"></div>`
+          : ""
+      }`;
+    document.body.appendChild(overlay);
+
+    const state = { overlay, index: 0, startX: null, startY: null };
+    const show = (i) => {
+      // Re-derive from live state: the feed can update while the viewer is
+      // open, and navigating a stale image list would desync from the card.
+      const posts = this._posts();
+      const current = posts.length
+        ? this._postImages(posts[Math.min(this._postIndex, posts.length - 1)])
+        : [];
+      if (i < 0 || i >= current.length) {
+        return;
+      }
+      state.index = i;
+      const img = overlay.querySelector("img");
+      img.src = current[i];
+      img.alt = `Photo ${i + 1} of ${current.length}`;
+      const counter = overlay.querySelector(".ew-counter");
+      if (counter) {
+        counter.textContent = `${i + 1} / ${current.length}`;
+      }
+      // Keep the card's carousel on the same photo.
+      this._setPhoto(i, current.length);
+    };
+    state.onKey = (ev) => {
+      if (ev.key === "Escape") {
+        this._closeLightbox();
+      } else if (ev.key === "ArrowLeft") {
+        show(state.index - 1);
+      } else if (ev.key === "ArrowRight") {
+        show(state.index + 1);
+      }
+    };
+    this._lightbox = state;
+
+    overlay.addEventListener("click", (ev) => {
+      if (ev.target.closest("button")) {
+        return;
+      }
+      this._closeLightbox();
+    });
+    overlay
+      .querySelector(".ew-close")
+      .addEventListener("click", () => this._closeLightbox());
+    overlay
+      .querySelector(".ew-prev")
+      ?.addEventListener("click", () => show(state.index - 1));
+    overlay
+      .querySelector(".ew-next")
+      ?.addEventListener("click", () => show(state.index + 1));
+    overlay.addEventListener(
+      "touchstart",
+      (ev) => {
+        state.startX = ev.touches[0].clientX;
+        state.startY = ev.touches[0].clientY;
+      },
+      { passive: true },
+    );
+    overlay.addEventListener(
+      "touchend",
+      (ev) => {
+        if (state.startX === null) {
+          return;
+        }
+        const deltaX = ev.changedTouches[0].clientX - state.startX;
+        const deltaY = ev.changedTouches[0].clientY - state.startY;
+        state.startX = null;
+        state.startY = null;
+        if (Math.abs(deltaX) > 40 && Math.abs(deltaX) > Math.abs(deltaY)) {
+          show(state.index + (deltaX < 0 ? 1 : -1));
+        }
+      },
+      { passive: true },
+    );
+    window.addEventListener("keydown", state.onKey);
+
+    show(index);
+  }
+
+  _closeLightbox() {
+    if (!this._lightbox) {
+      return;
+    }
+    window.removeEventListener("keydown", this._lightbox.onKey);
+    this._lightbox.overlay.remove();
+    this._lightbox = null;
   }
 
   // -- Styles ---------------------------------------------------------------
@@ -619,6 +756,19 @@ const EDITOR_SCHEMA = [
     name: "image_height",
     selector: { number: { min: 120, max: 800, step: 10, mode: "box" } },
   },
+  {
+    name: "image_click",
+    selector: {
+      select: {
+        mode: "dropdown",
+        options: [
+          { value: "lightbox", label: "View larger (lightbox)" },
+          { value: "url", label: "Open original in a new tab" },
+          { value: "none", label: "Do nothing" },
+        ],
+      },
+    },
+  },
 ];
 
 const EDITOR_LABELS = {
@@ -626,6 +776,7 @@ const EDITOR_LABELS = {
   title: "Card title",
   show_post_nav: "Allow paging through older posts",
   image_height: "Photo carousel height (px)",
+  image_click: "Photo tap action",
 };
 
 class EweatherFeedCardEditor extends HTMLElement {
