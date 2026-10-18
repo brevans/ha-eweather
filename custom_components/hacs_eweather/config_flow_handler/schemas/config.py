@@ -17,13 +17,13 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Any
 
-import voluptuous as vol
+import probatio
 
 from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
 from homeassistant.helpers import selector
 
 
-def get_user_schema(defaults: Mapping[str, Any] | None = None) -> vol.Schema:
+def get_user_schema(defaults: Mapping[str, Any] | None = None) -> probatio.Schema:
     """
     Get schema for user step (initial setup).
 
@@ -35,17 +35,17 @@ def get_user_schema(defaults: Mapping[str, Any] | None = None) -> vol.Schema:
 
     """
     defaults = defaults or {}
-    return vol.Schema(
+    return probatio.Schema(
         {
-            vol.Required(
+            probatio.Required(
                 CONF_USERNAME,
-                default=defaults.get(CONF_USERNAME, vol.UNDEFINED),
+                default=defaults.get(CONF_USERNAME, probatio.UNDEFINED),
             ): selector.TextSelector(
                 selector.TextSelectorConfig(
                     type=selector.TextSelectorType.TEXT,
                 ),
             ),
-            vol.Required(CONF_PASSWORD): selector.TextSelector(
+            probatio.Required(CONF_PASSWORD): selector.TextSelector(
                 selector.TextSelectorConfig(
                     type=selector.TextSelectorType.PASSWORD,
                 ),
@@ -54,7 +54,7 @@ def get_user_schema(defaults: Mapping[str, Any] | None = None) -> vol.Schema:
     )
 
 
-def get_reconfigure_schema(username: str) -> vol.Schema:
+def get_reconfigure_schema(username: str) -> probatio.Schema:
     """
     Get schema for reconfigure step.
 
@@ -65,9 +65,9 @@ def get_reconfigure_schema(username: str) -> vol.Schema:
         Voluptuous schema for reconfiguration.
 
     """
-    return vol.Schema(
+    return probatio.Schema(
         {
-            vol.Required(
+            probatio.Required(
                 CONF_USERNAME,
                 default=username,
             ): selector.TextSelector(
@@ -75,7 +75,7 @@ def get_reconfigure_schema(username: str) -> vol.Schema:
                     type=selector.TextSelectorType.TEXT,
                 ),
             ),
-            vol.Required(
+            probatio.Required(
                 CONF_PASSWORD,
             ): selector.TextSelector(
                 selector.TextSelectorConfig(
@@ -86,7 +86,7 @@ def get_reconfigure_schema(username: str) -> vol.Schema:
     )
 
 
-def get_reauth_schema(username: str) -> vol.Schema:
+def get_reauth_schema(username: str) -> probatio.Schema:
     """
     Get schema for reauthentication step.
 
@@ -97,9 +97,9 @@ def get_reauth_schema(username: str) -> vol.Schema:
         Voluptuous schema for reauthentication.
 
     """
-    return vol.Schema(
+    return probatio.Schema(
         {
-            vol.Required(
+            probatio.Required(
                 CONF_USERNAME,
                 default=username,
             ): selector.TextSelector(
@@ -107,7 +107,7 @@ def get_reauth_schema(username: str) -> vol.Schema:
                     type=selector.TextSelectorType.TEXT,
                 ),
             ),
-            vol.Required(
+            probatio.Required(
                 CONF_PASSWORD,
             ): selector.TextSelector(
                 selector.TextSelectorConfig(

@@ -24,7 +24,7 @@ Each entry in `posts` has: `id`, `title`, `text`, `category`, `created`, `author
 
 Post images are public URLs, so they can be used directly in cards — and the integration ships its own dashboard card (below).
 
-The integration registers no services and installs no extra Python packages. Requires Home Assistant **2026.4.0** or newer.
+The integration registers no services and installs no extra Python packages. Requires Home Assistant **2026.10.0** or newer.
 
 ## Installation
 

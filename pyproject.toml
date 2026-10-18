@@ -53,6 +53,8 @@ filterwarnings = [
     # aiohttp warns about string (non-AppKey) app keys; Home Assistant's own `http`
     # component (a manifest dependency of this integration) triggers it during setup.
     "ignore:It is recommended to use web.AppKey instances for keys:UserWarning",
+    # Same for string request keys, raised by HA's http middleware when serving the card (aiohttp 3.14+).
+    "ignore:It is recommended to use web.RequestKey instances for keys:UserWarning",
     # Home Assistant's async_get_clientsession() wraps ClientSession.close, which
     # newer aiohttp deprecates; triggered whenever the integration builds its client.
     "ignore:Setting custom ClientSession.close attribute is discouraged:DeprecationWarning",
@@ -252,11 +254,14 @@ ignore = [
 
 [tool.ruff.lint.flake8-import-conventions.extend-aliases]
 # Commonly used Home Assistant imports
-voluptuous = "vol"
 "homeassistant.helpers.config_validation" = "cv"
 "homeassistant.helpers.device_registry" = "dr"
 "homeassistant.helpers.entity_registry" = "er"
 "homeassistant.util.dt" = "dt_util"
+
+[tool.ruff.lint.flake8-import-conventions.banned-aliases]
+# Matches Home Assistant Core: import probatio by its own name
+"probatio" = ["vol"]
 
 [tool.ruff.lint.flake8-pytest-style]
 fixture-parentheses = false
@@ -266,6 +271,7 @@ mark-parentheses = false
 "async_timeout".msg = "use asyncio.timeout instead"
 "pytz".msg = "use zoneinfo instead"
 "tests".msg = "You should not import tests"
+"voluptuous".msg = "use probatio instead (Home Assistant 2026.9+ validates with probatio)"
 
 [tool.ruff.lint.isort]
 force-sort-within-sections = true

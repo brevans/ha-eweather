@@ -1,7 +1,7 @@
 """
 Data schemas for config flow forms.
 
-This package contains all voluptuous schemas used in config flows, options flows,
+This package contains all probatio schemas used in config flows, options flows,
 and subentry flows. Schemas are organized into separate modules for better
 maintainability as the integration grows.
 

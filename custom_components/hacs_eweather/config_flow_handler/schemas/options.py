@@ -15,7 +15,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Any
 
-import voluptuous as vol
+import probatio
 
 from custom_components.hacs_eweather.const import (
     CONF_ENABLE_DEBUGGING,
@@ -30,7 +30,7 @@ from custom_components.hacs_eweather.const import (
 from homeassistant.helpers import selector
 
 
-def get_options_schema(defaults: Mapping[str, Any] | None = None) -> vol.Schema:
+def get_options_schema(defaults: Mapping[str, Any] | None = None) -> probatio.Schema:
     """
     Get schema for options flow.
 
@@ -42,9 +42,9 @@ def get_options_schema(defaults: Mapping[str, Any] | None = None) -> vol.Schema:
 
     """
     defaults = defaults or {}
-    return vol.Schema(
+    return probatio.Schema(
         {
-            vol.Optional(
+            probatio.Optional(
                 CONF_UPDATE_INTERVAL_HOURS,
                 default=defaults.get(CONF_UPDATE_INTERVAL_HOURS, DEFAULT_UPDATE_INTERVAL_HOURS),
             ): selector.NumberSelector(
@@ -56,11 +56,11 @@ def get_options_schema(defaults: Mapping[str, Any] | None = None) -> vol.Schema:
                     mode=selector.NumberSelectorMode.BOX,
                 ),
             ),
-            vol.Optional(
+            probatio.Optional(
                 CONF_OFFICIAL_ONLY,
                 default=defaults.get(CONF_OFFICIAL_ONLY, DEFAULT_OFFICIAL_ONLY),
             ): selector.BooleanSelector(),
-            vol.Optional(
+            probatio.Optional(
                 CONF_POST_COUNT,
                 default=defaults.get(CONF_POST_COUNT, DEFAULT_POST_COUNT),
             ): selector.NumberSelector(
@@ -72,7 +72,7 @@ def get_options_schema(defaults: Mapping[str, Any] | None = None) -> vol.Schema:
                     mode=selector.NumberSelectorMode.BOX,
                 ),
             ),
-            vol.Optional(
+            probatio.Optional(
                 CONF_ENABLE_DEBUGGING,
                 default=defaults.get(CONF_ENABLE_DEBUGGING, DEFAULT_ENABLE_DEBUGGING),
             ): selector.BooleanSelector(),

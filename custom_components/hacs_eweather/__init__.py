@@ -24,7 +24,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from homeassistant.components.frontend import add_extra_js_url
-from homeassistant.components.http import StaticPathConfig
+from homeassistant.components.http import StaticPathConfig  # pyright: ignore[reportPrivateImportUsage]
 from homeassistant.const import CONF_PASSWORD, CONF_USERNAME, Platform
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 import homeassistant.helpers.config_validation as cv
