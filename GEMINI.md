@@ -13,10 +13,10 @@ Read `AGENTS.md` completely before starting any work. It contains:
 
 ## Quick Reference
 
-- **Domain:** `hacs_eweather`
+- **Domain:** `eweather`
 - **Title:** EWeather Home Assistant Integration
 - **Class prefix:** `EWeatherHomeAssistant`
-- **Main code:** `custom_components/hacs_eweather/`
+- **Main code:** `custom_components/eweather/`
 - **Validate:** `script/check` (type-check + lint + spell)
 - **Test:** `script/test`
 - **Run HA:** `./script/develop`

@@ -19,11 +19,11 @@ been rewritten (real feature set + personal-use disclaimer) as part of this pass
 
 **Card (2026-07-02):** the previously-deferred Lovelace card is now implemented —
 `eweather-feed-card` ships inside the integration
-(`custom_components/hacs_eweather/www/`), is served and registered automatically via
+(`custom_components/eweather/www/`), is served and registered automatically via
 `async_setup` (static path + `add_extra_js_url`), and shows the newest post with
 relative/absolute timestamps plus a swipeable photo carousel and older-post paging.
-Brand icon assets recreated from the app artwork live in `assets/brands/hacs_eweather/`,
-ready to submit to the `home-assistant/brands` repo (`custom_integrations/hacs_eweather/`).
+Brand icon assets recreated from the app artwork live in `assets/brands/eweather/`,
+ready to submit to the `home-assistant/brands` repo (`custom_integrations/eweather/`).
 
 **Discovery outcome (CONFIRMED):** the app is **Flutter** but the backend is
 **Firebase** (the easy case). Auth = **email/password** via Firebase Auth REST. The
@@ -34,8 +34,9 @@ is official iff its author (`Post.sender` uid) has **`admin == true`** on its
 fetches the newest posts (order-by `created`), and keeps only admin-authored ones. A live
 run returned 150 posts → 25 official (current heat-wave forecasts from "Admin Account").
 
-> Note: the repo was scaffolded from a HA blueprint template, so the actual domain is
-> **`hacs_eweather`** (not `eweather`) and it uses the template's package structure
+> Note: the repo was scaffolded from a HA blueprint template. The domain started as
+> `hacs_eweather` and was renamed to **`eweather`** in 2026-10 (HACS rejects repo names
+> containing "HACS"); it uses the template's package structure
 > (`api/`, `coordinator/`, `sensor/`, …) per `AGENTS.md`, not the flat layout sketched
 > below. The template's example entities have been stripped.
 

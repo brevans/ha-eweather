@@ -54,7 +54,7 @@ automation:
         weekday:
           - mon
     action:
-      - action: hacs_eweather.example_service
+      - action: eweather.example_service
         target:
           entity_id: button.device_name_reset_filter
 ```
@@ -74,7 +74,7 @@ blueprint:
       selector:
         entity:
           domain: sensor
-          integration: hacs_eweather
+          integration: eweather
     threshold:
       name: Threshold value
       selector:
@@ -160,4 +160,4 @@ hours_to_show: 24
 
 - [Configuration Reference](./CONFIGURATION.md) - All configuration options
 - [Getting Started](./GETTING_STARTED.md) - Installation and initial setup
-- [GitHub Issues](https://github.com/brevans/hacs-eweather/issues) - Report problems
+- [GitHub Issues](https://github.com/brevans/ha-eweather/issues) - Report problems

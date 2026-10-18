@@ -1,4 +1,4 @@
-"""Tests for the hacs_eweather config flow (user, reauth, reconfigure)."""
+"""Tests for the eweather config flow (user, reauth, reconfigure)."""
 
 from __future__ import annotations
 
@@ -8,18 +8,18 @@ from unittest.mock import AsyncMock, patch
 import pytest
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
-from custom_components.hacs_eweather.api import (
+from custom_components.eweather.api import (
     EWeatherHomeAssistantApiClientAuthenticationError,
     EWeatherHomeAssistantApiClientCommunicationError,
 )
-from custom_components.hacs_eweather.const import DOMAIN
+from custom_components.eweather.const import DOMAIN
 from homeassistant import config_entries
 from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
 from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import FlowResultType
 
-VALIDATE = "custom_components.hacs_eweather.config_flow_handler.config_flow.validate_credentials"
-SETUP_ENTRY = "custom_components.hacs_eweather.async_setup_entry"
+VALIDATE = "custom_components.eweather.config_flow_handler.config_flow.validate_credentials"
+SETUP_ENTRY = "custom_components.eweather.async_setup_entry"
 
 
 @pytest.fixture

@@ -87,7 +87,7 @@ Disabled entities won't update or consume resources.
 
 The integration provides the following services:
 
-### `hacs_eweather.example_service`
+### `eweather.example_service`
 
 Execute an example service action on the device.
 
@@ -102,7 +102,7 @@ Execute an example service action on the device.
 **Example:**
 
 ```yaml
-service: hacs_eweather.example_service
+service: eweather.example_service
 target:
   entity_id: switch.device_name_switch
 data:
@@ -119,7 +119,7 @@ automation:
       - trigger: sun
         event: sunset
     action:
-      - action: hacs_eweather.example_service
+      - action: eweather.example_service
         target:
           entity_id: switch.device_name_switch
         data:
@@ -199,7 +199,7 @@ blueprint:
       selector:
         entity:
           domain: sensor
-          integration: hacs_eweather
+          integration: eweather
     threshold:
       name: Threshold
       selector:
@@ -246,4 +246,4 @@ If configuration changes aren't persisted:
 
 - [Getting Started](./GETTING_STARTED.md) - Installation and initial setup
 - [Examples](./EXAMPLES.md) - Automation and dashboard examples
-- [GitHub Issues](https://github.com/brevans/hacs-eweather/issues) - Report problems
+- [GitHub Issues](https://github.com/brevans/ha-eweather/issues) - Report problems

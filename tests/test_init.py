@@ -1,4 +1,4 @@
-"""Tests for hacs_eweather entry setup, unique_id migration, and unload."""
+"""Tests for eweather entry setup, unique_id migration, and unload."""
 
 from __future__ import annotations
 
@@ -8,13 +8,13 @@ from unittest.mock import patch
 
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
-from custom_components.hacs_eweather.const import CONF_OFFICIAL_ONLY, DOMAIN
+from custom_components.eweather.const import CONF_OFFICIAL_ONLY, DOMAIN
 from homeassistant.config_entries import ConfigEntryState
 from homeassistant.const import CONF_PASSWORD, CONF_USERNAME, STATE_UNAVAILABLE
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import entity_registry as er
 
-GET_DATA = "custom_components.hacs_eweather.api.client.EWeatherHomeAssistantApiClient.async_get_data"
+GET_DATA = "custom_components.eweather.api.client.EWeatherHomeAssistantApiClient.async_get_data"
 
 # Sanitized fixture posts (based on docs/samples/*.json) in the shape the client
 # returns them: decoded, tagged with _official/_author, newest first.

@@ -11,13 +11,13 @@ from typing import Any
 
 import pytest
 
-from custom_components.hacs_eweather.api import (
+from custom_components.eweather.api import (
     EWeatherHomeAssistantApiClient,
     EWeatherHomeAssistantApiClientAuthenticationError,
     EWeatherHomeAssistantApiClientCommunicationError,
     EWeatherHomeAssistantApiClientError,
 )
-from custom_components.hacs_eweather.const import ADMIN_CACHE_TTL_SECONDS
+from custom_components.eweather.const import ADMIN_CACHE_TTL_SECONDS
 
 # Sanitized fixtures based on docs/samples/*.json (no real uids/emails/tokens).
 IMAGE_ORIGINAL = (

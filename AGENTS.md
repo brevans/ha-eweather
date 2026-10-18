@@ -8,13 +8,13 @@ This is a Home Assistant custom integration that was generated from a blueprint 
 
 **Integration details:**
 
-- **Domain:** `hacs_eweather`
+- **Domain:** `eweather`
 - **Title:** EWeather Home Assistant Integration
-- **Repository:** brevans/hacs-eweather
+- **Repository:** brevans/ha-eweather
 
 **Key directories:**
 
-- `custom_components/hacs_eweather/` - Main integration code
+- `custom_components/eweather/` - Main integration code
 - `config/` - Home Assistant configuration for local testing
 - `tests/` - Unit and integration tests
 - `script/` - Development and validation scripts
@@ -51,7 +51,7 @@ pkill -f "hass --config" || true && pkill -f "debugpy.*5678" || true && ./script
 
 **Adjusting log levels:**
 
-- Integration logs: `custom_components.hacs_eweather: debug` in `config/configuration.yaml`
+- Integration logs: `custom_components.eweather: debug` in `config/configuration.yaml`
 - You can modify log levels when debugging - just restart HA after changes
 
 **Context-specific instructions:**
@@ -187,13 +187,13 @@ As an AI agent, **aim for Silver or Gold Quality Scale** when generating code:
 
 This integration uses the following identifiers consistently:
 
-- **Domain:** `hacs_eweather`
+- **Domain:** `eweather`
 - **Title:** EWeather Home Assistant Integration
 - **Class prefix:** `EWeatherHomeAssistant`
 
 **When creating new files:**
 
-- Use the domain `hacs_eweather` for all DOMAIN references
+- Use the domain `eweather` for all DOMAIN references
 - Prefix all integration-specific classes with `EWeatherHomeAssistant`
 - Use "EWeather Home Assistant Integration" as the display title
 - Never hardcode different values
@@ -524,7 +524,7 @@ After auto-fixes are applied, only manually edit files for errors that **remain 
 
 **Test structure:**
 
-- `tests/` mirrors `custom_components/hacs_eweather/` structure
+- `tests/` mirrors `custom_components/eweather/` structure
 - Use fixtures for common setup (Home Assistant mock, coordinator, etc.)
 - Mock external API calls
 

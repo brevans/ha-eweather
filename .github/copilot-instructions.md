@@ -6,10 +6,10 @@
 
 ## Project Identity
 
-- **Domain:** `hacs_eweather`
+- **Domain:** `eweather`
 - **Title:** EWeather Home Assistant Integration
 - **Class prefix:** `EWeatherHomeAssistant`
-- **Main code:** `custom_components/hacs_eweather/`
+- **Main code:** `custom_components/eweather/`
 - **Validate:** `script/check` (type-check + lint-check + spell-check)
 - **Start HA:** `./script/develop` (kills existing, starts on port 8123)
 - **Force restart:** `pkill -f "hass --config" || true && pkill -f "debugpy.*5678" || true && ./script/develop`
@@ -140,7 +140,7 @@ script/type-check   # Pyright — no auto-fix ever
 
 - Live: terminal where `./script/develop` runs
 - File: `config/home-assistant.log` (most recent), `config/home-assistant.log.1` (previous)
-- Debug level: `custom_components.hacs_eweather: debug` in `config/configuration.yaml`
+- Debug level: `custom_components.eweather: debug` in `config/configuration.yaml`
 
 ## Working With the Developer
 

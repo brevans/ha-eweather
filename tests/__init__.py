@@ -1,1 +1,1 @@
-"""Tests for the hacs_eweather integration."""
+"""Tests for the eweather integration."""

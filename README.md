@@ -32,13 +32,13 @@ The integration registers no services and installs no extra Python packages. Req
 
 1. In Home Assistant, open **HACS** → **Integrations**
 2. Click the **⋮** menu (top right) → **Custom repositories**
-3. Add `https://github.com/brevans/hacs-eweather` with type **Integration**
+3. Add `https://github.com/brevans/ha-eweather` with type **Integration**
 4. Find "EWeather Home Assistant Integration" in HACS and click **Download**
 5. **Restart Home Assistant**
 
 ### Option 2: Manual
 
-1. Copy the `custom_components/hacs_eweather/` folder from this repository into your Home Assistant `config/custom_components/` directory
+1. Copy the `custom_components/eweather/` folder from this repository into your Home Assistant `config/custom_components/` directory
 2. **Restart Home Assistant**
 
 ## Configuration
@@ -86,7 +86,7 @@ After upgrading the integration, restart Home Assistant and hard-refresh the bro
 
 ## Integration icon
 
-The integration ships the eweather app icon in [`custom_components/hacs_eweather/brand/`](custom_components/hacs_eweather/brand/). Home Assistant 2026.3 and newer serve these local brand images directly, so the icon shows up in the UI without a [home-assistant/brands](https://github.com/home-assistant/brands) submission.
+The integration ships the eweather app icon in [`custom_components/eweather/brand/`](custom_components/eweather/brand/). Home Assistant 2026.3 and newer serve these local brand images directly, so the icon shows up in the UI without a [home-assistant/brands](https://github.com/home-assistant/brands) submission.
 
 ## Troubleshooting
 
@@ -95,7 +95,7 @@ The integration ships the eweather app icon in [`custom_components/hacs_eweather
   ```yaml
   logger:
     logs:
-      custom_components.hacs_eweather: debug
+      custom_components.eweather: debug
   ```
 
 - **"We found a custom integration ... not tested by Home Assistant"** in the startup log is normal for any custom integration, including this one.
@@ -118,7 +118,7 @@ This project is licensed under the MIT License — see the [LICENSE](LICENSE) fi
 
 [hacs]: https://github.com/hacs/integration
 [hacsbadge]: https://img.shields.io/badge/HACS-Custom-orange.svg?style=for-the-badge
-[license-shield]: https://img.shields.io/github/license/brevans/hacs-eweather.svg?style=for-the-badge
+[license-shield]: https://img.shields.io/github/license/brevans/ha-eweather.svg?style=for-the-badge
 [maintenance-shield]: https://img.shields.io/badge/maintainer-%40brevans-blue.svg?style=for-the-badge
-[releases-shield]: https://img.shields.io/github/release/brevans/hacs-eweather.svg?style=for-the-badge
-[releases]: https://github.com/brevans/hacs-eweather/releases
+[releases-shield]: https://img.shields.io/github/release/brevans/ha-eweather.svg?style=for-the-badge
+[releases]: https://github.com/brevans/ha-eweather/releases

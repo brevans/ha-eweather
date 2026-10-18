@@ -8,14 +8,14 @@ from unittest.mock import patch
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 from pytest_homeassistant_custom_component.typing import ClientSessionGenerator
 
-from custom_components.hacs_eweather import CARD_URL
-from custom_components.hacs_eweather.const import DOMAIN
+from custom_components.eweather import CARD_URL
+from custom_components.eweather.const import DOMAIN
 from homeassistant.components.frontend import DATA_EXTRA_MODULE_URL
 from homeassistant.config_entries import ConfigEntryState
 from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
 from homeassistant.core import HomeAssistant
 
-GET_DATA = "custom_components.hacs_eweather.api.client.EWeatherHomeAssistantApiClient.async_get_data"
+GET_DATA = "custom_components.eweather.api.client.EWeatherHomeAssistantApiClient.async_get_data"
 
 EMPTY_FEED: dict[str, Any] = {
     "posts": [],

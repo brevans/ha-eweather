@@ -1,4 +1,4 @@
-"""Shared fixtures for the hacs_eweather test suite."""
+"""Shared fixtures for the eweather test suite."""
 
 import pytest
 

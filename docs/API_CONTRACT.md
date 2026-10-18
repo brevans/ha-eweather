@@ -8,7 +8,7 @@ validated with the live probe, `tools/probe.py`).
 
 > **Status:** Milestone 1 complete and **CONFIRMED via live probe**. The Post schema
 > and the official-vs-user discriminator (Section 5) are locked. The integration client
-> (`custom_components/hacs_eweather/api/client.py`) is verified end-to-end against live
+> (`custom_components/eweather/api/client.py`) is verified end-to-end against live
 > Firebase (auth, admin query, ordered fetch, filtering, and bad-credential handling).
 
 ---

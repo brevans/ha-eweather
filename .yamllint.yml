@@ -1,5 +1,5 @@
 ---
-# yamllint configuration for hacs_eweather
+# yamllint configuration for eweather
 # Documentation: https://yamllint.readthedocs.io/en/stable/rules.html
 
 extends: default

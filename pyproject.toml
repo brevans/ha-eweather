@@ -6,15 +6,15 @@
 # - [tool.pylint.*] - Optional additional linting (Ruff is sufficient)
 
 [project]
-name = "hacs_eweather"
+name = "eweather"
 version = "0.0.0"              # Version is managed in manifest.json only
 requires-python = ">=3.14"
 
 [tool.setuptools]
-packages = ["custom_components.hacs_eweather"]
+packages = ["custom_components.eweather"]
 
 [tool.pyright]
-include = ["custom_components/hacs_eweather"]
+include = ["custom_components/eweather"]
 exclude = [
     "**/.*",
     "**/__pycache__",
@@ -62,7 +62,7 @@ filterwarnings = [
 ]
 
 [tool.coverage.run]
-source = ["custom_components/hacs_eweather"]
+source = ["custom_components/eweather"]
 omit = ["tests/*"]
 
 [tool.coverage.report]

@@ -1,0 +1,17 @@
+{
+  "domain": "eweather",
+  "name": "EWeather Home Assistant Integration",
+  "codeowners": [
+    "@brevans"
+  ],
+  "config_flow": true,
+  "dependencies": [
+    "frontend",
+    "http"
+  ],
+  "documentation": "https://github.com/brevans/ha-eweather",
+  "integration_type": "service",
+  "iot_class": "cloud_polling",
+  "issue_tracker": "https://github.com/brevans/ha-eweather/issues",
+  "version": "0.2.1"
+}

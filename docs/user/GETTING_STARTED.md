@@ -16,7 +16,7 @@ This guide will help you install and set up the EWeather Home Assistant Integrat
 2. Go to "Integrations"
 3. Click the three dots in the top right corner
 4. Select "Custom repositories"
-5. Add this repository URL: `https://github.com/brevans/hacs-eweather`
+5. Add this repository URL: `https://github.com/brevans/ha-eweather`
 6. Set category to "Integration"
 7. Click "Add"
 8. Find "EWeather Home Assistant Integration" in the integration list
@@ -25,9 +25,9 @@ This guide will help you install and set up the EWeather Home Assistant Integrat
 
 ### Manual Installation
 
-1. Download the latest release from the [releases page](https://github.com/brevans/hacs-eweather/releases)
-2. Extract the `hacs_eweather` folder from the archive
-3. Copy it to `custom_components/hacs_eweather/` in your Home Assistant configuration directory
+1. Download the latest release from the [releases page](https://github.com/brevans/ha-eweather/releases)
+2. Extract the `eweather` folder from the archive
+3. Copy it to `custom_components/eweather/` in your Home Assistant configuration directory
 4. Restart Home Assistant
 
 ## Initial Setup
@@ -172,7 +172,7 @@ Enable debug logging to troubleshoot issues:
 logger:
   default: warning
   logs:
-    custom_components.hacs_eweather: debug
+    custom_components.eweather: debug
 ```
 
 Add this to `configuration.yaml`, restart, and reproduce the issue. Check logs for detailed information.
@@ -181,11 +181,11 @@ Add this to `configuration.yaml`, restart, and reproduce the issue. Check logs f
 
 - See [CONFIGURATION.md](./CONFIGURATION.md) for detailed configuration options
 - See [EXAMPLES.md](./EXAMPLES.md) for more automation examples
-- Report issues at [GitHub Issues](https://github.com/brevans/hacs-eweather/issues)
+- Report issues at [GitHub Issues](https://github.com/brevans/ha-eweather/issues)
 
 ## Support
 
 For help and discussion:
 
-- [GitHub Discussions](https://github.com/brevans/hacs-eweather/discussions)
+- [GitHub Discussions](https://github.com/brevans/ha-eweather/discussions)
 - [Home Assistant Community Forum](https://community.home-assistant.io/)

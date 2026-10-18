@@ -5,7 +5,7 @@ This document describes the technical architecture of the EWeather Home Assistan
 ## Directory Structure
 
 ```text
-custom_components/hacs_eweather/
+custom_components/eweather/
 ├── __init__.py              # Integration setup and unload
 ├── config_flow.py           # Config flow entry point
 ├── const.py                 # Constants and configuration keys
@@ -296,7 +296,7 @@ To add new functionality:
 
 ### Adding a New Platform
 
-1. Create directory: `custom_components/hacs_eweather/<platform>/`
+1. Create directory: `custom_components/eweather/<platform>/`
 2. Implement `__init__.py` with `async_setup_entry()`
 3. Create entity classes inheriting from platform base + `EWeatherHomeAssistantEntity`
 4. Add platform to `PLATFORMS` in `const.py`

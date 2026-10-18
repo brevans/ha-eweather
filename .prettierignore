@@ -2,7 +2,7 @@
 config/
 !config/configuration.yaml
 custom_components/
-!custom_components/hacs_eweather/
+!custom_components/eweather/
 
 # Auto-generated release files
 CHANGELOG.md
