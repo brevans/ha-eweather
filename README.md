@@ -86,7 +86,7 @@ After upgrading the integration, restart Home Assistant and hard-refresh the bro
 
 ## Integration icon
 
-Brand assets recreated from the official app artwork live in [`assets/brands/hacs_eweather/`](assets/brands/hacs_eweather/). Home Assistant only displays integration icons served from [home-assistant/brands](https://github.com/home-assistant/brands), so the icon appears in the UI once those files are submitted there (as `custom_integrations/hacs_eweather/`) and the PR is merged.
+The integration ships the eweather app icon in [`custom_components/hacs_eweather/brand/`](custom_components/hacs_eweather/brand/). Home Assistant 2026.3 and newer serve these local brand images directly, so the icon shows up in the UI without a [home-assistant/brands](https://github.com/home-assistant/brands) submission.
 
 ## Troubleshooting
 
