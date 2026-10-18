@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/brevans/hacs-eweather/compare/v0.2.0...v0.2.1) (2026-10-18)
+
+
+### Features
+
+* ship the eweather app icon as local brand images ([1ccc7e2](https://github.com/brevans/hacs-eweather/commit/1ccc7e214e6e455db4d461353fdb18c2c7bbe69b))
+
 ## [0.2.0](https://github.com/brevans/hacs-eweather/compare/v0.1.0...v0.2.0) (2026-10-18)
 
 
