@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.2](https://github.com/brevans/ha-eweather/compare/v0.2.1...v0.2.2) (2026-10-18)
+
+
+### Bug Fixes
+
+* rename the integration domain from hacs_eweather to eweather ([e5fa065](https://github.com/brevans/ha-eweather/commit/e5fa065654b4858e22c157ba99646b6d71407f36))
+
 ## [0.2.1](https://github.com/brevans/hacs-eweather/compare/v0.2.0...v0.2.1) (2026-10-18)
 
 
