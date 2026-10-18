@@ -45,6 +45,7 @@ addopts = "-ra -q --strict-markers"
 markers = [
     "unit: Unit tests (fast, no external dependencies)",
     "integration: Integration tests (may use coordinator/time service)",
+    "live: Live smoke tests that hit the real eweather backend (tests_live/, not run by script/test)",
 ]
 filterwarnings = [
     # Treat warnings as errors to catch issues early
@@ -293,6 +294,13 @@ split-on-trailing-comma = false
     "PLR2004", # Magic values are fine in tests
     "D",       # Docstrings not required in tests
     "PTH",     # Use pathlib - temporary exemption for tests
+]
+"tests_live/*" = [
+    "S101",    # assert is fine in tests
+    "PLR2004", # Magic values are fine in tests
+    "D",       # Docstrings not required in tests
+    "PTH",     # Use pathlib - temporary exemption for tests
+    "T20",     # print() surfaces the live feed counts in the CI log
 ]
 
 [tool.ruff.lint.mccabe]

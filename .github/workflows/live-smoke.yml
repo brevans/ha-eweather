@@ -1,0 +1,79 @@
+name: Live smoke
+
+# Signs in to the real eweather backend and fetches the feed, to catch breakage
+# that unit tests cannot see — most importantly a server-side change to eweather's
+# Firebase API key (e.g. API_KEY_ANDROID_APP_BLOCKED), which blocks sign-in before
+# the password is ever checked.
+#
+# Needs two repository secrets (Settings → Secrets and variables → Actions):
+#   EWEATHER_USERNAME  — the account email
+#   EWEATHER_PASSWORD  — the account password
+# These are real, live credentials. GitHub does not expose repository secrets to
+# pull requests from forks, and this workflow runs only on a schedule or manual
+# dispatch, never on push/PR. For extra safety you can instead put them on a
+# protected environment and add `environment: <name>` to the job below. A
+# dedicated/secondary eweather account is safer than a primary one if the
+# service allows it.
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Weekly, Monday 06:00 UTC. Low frequency, in keeping with the integration's
+    # "single account, low frequency, personal use" stance.
+    - cron: "0 6 * * 1"
+
+permissions: {}
+
+jobs:
+  smoke:
+    name: Live sign-in + fetch
+    runs-on: ubuntu-latest
+    # Only ever run on manual dispatch or the schedule — never on push/PR.
+    if: github.event_name == 'workflow_dispatch' || github.event_name == 'schedule'
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Check credentials are configured
+        id: guard
+        env:
+          EWEATHER_USERNAME: ${{ secrets.EWEATHER_USERNAME }}
+          EWEATHER_PASSWORD: ${{ secrets.EWEATHER_PASSWORD }}
+        run: |
+          if [ -z "${EWEATHER_USERNAME}" ] || [ -z "${EWEATHER_PASSWORD}" ]; then
+            echo "::warning::EWEATHER_USERNAME / EWEATHER_PASSWORD repository secrets not set — skipping."
+            echo "configured=false" >> "${GITHUB_OUTPUT}"
+          else
+            echo "configured=true" >> "${GITHUB_OUTPUT}"
+          fi
+
+      - name: Set up Python
+        if: steps.guard.outputs.configured == 'true'
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.14"
+
+      - name: Install uv
+        if: steps.guard.outputs.configured == 'true'
+        uses: astral-sh/setup-uv@fac544c07dec837d0ccb6301d7b5580bf5edae39 # v8.2.0
+        with:
+          version: "0.9.3"
+
+      - name: Install dependencies
+        if: steps.guard.outputs.configured == 'true'
+        run: |
+          # The API client imports the integration package, which imports Home Assistant,
+          # so install HA (matching the hacs.json train) plus the test runner. The exact
+          # patch version does not affect the live backend behaviour this test checks.
+          HA_VERSION=$(grep '"homeassistant"' hacs.json | head -1 | sed 's/.*"homeassistant"\s*:\s*"\([^"]*\)".*/\1/')
+          uv venv
+          uv pip install "homeassistant==${HA_VERSION%.*}.*" pytest pytest-asyncio aiohttp
+
+      - name: Run live smoke test
+        if: steps.guard.outputs.configured == 'true'
+        env:
+          EWEATHER_USERNAME: ${{ secrets.EWEATHER_USERNAME }}
+          EWEATHER_PASSWORD: ${{ secrets.EWEATHER_PASSWORD }}
+        run: uv run pytest tests_live/ -v
